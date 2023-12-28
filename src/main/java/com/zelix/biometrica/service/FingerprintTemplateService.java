@@ -1,6 +1,6 @@
 package com.zelix.biometrica.service;
 
-import com.zelix.biometrica.domain.FingerprintTemplate;
+import com.zelix.biometrica.service.dto.FingerprintTemplateDTO;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,40 +11,40 @@ public interface FingerprintTemplateService {
     /**
      * Save a fingerprintTemplate.
      *
-     * @param fingerprintTemplate the entity to save.
+     * @param fingerprintTemplateDTO the entity to save.
      * @return the persisted entity.
      */
-    FingerprintTemplate save(FingerprintTemplate fingerprintTemplate);
+    FingerprintTemplateDTO save(FingerprintTemplateDTO fingerprintTemplateDTO);
 
     /**
      * Updates a fingerprintTemplate.
      *
-     * @param fingerprintTemplate the entity to update.
+     * @param fingerprintTemplateDTO the entity to update.
      * @return the persisted entity.
      */
-    FingerprintTemplate update(FingerprintTemplate fingerprintTemplate);
+    FingerprintTemplateDTO update(FingerprintTemplateDTO fingerprintTemplateDTO);
 
     /**
      * Partially updates a fingerprintTemplate.
      *
-     * @param fingerprintTemplate the entity to update partially.
+     * @param fingerprintTemplateDTO the entity to update partially.
      * @return the persisted entity.
      */
-    Optional<FingerprintTemplate> partialUpdate(FingerprintTemplate fingerprintTemplate);
+    Optional<FingerprintTemplateDTO> partialUpdate(FingerprintTemplateDTO fingerprintTemplateDTO);
 
     /**
      * Get all the fingerprintTemplates.
      *
      * @return the list of entities.
      */
-    List<FingerprintTemplate> findAll();
+    List<FingerprintTemplateDTO> findAll();
 
     /**
-     * Get all the FingerprintTemplate where Fingerprint is {@code null}.
+     * Get all the FingerprintTemplateDTO where Fingerprint is {@code null}.
      *
      * @return the {@link List} of entities.
      */
-    List<FingerprintTemplate> findAllWhereFingerprintIsNull();
+    List<FingerprintTemplateDTO> findAllWhereFingerprintIsNull();
 
     /**
      * Get the "id" fingerprintTemplate.
@@ -52,7 +52,7 @@ public interface FingerprintTemplateService {
      * @param id the id of the entity.
      * @return the entity.
      */
-    Optional<FingerprintTemplate> findOne(Long id);
+    Optional<FingerprintTemplateDTO> findOne(Long id);
 
     /**
      * Delete the "id" fingerprintTemplate.

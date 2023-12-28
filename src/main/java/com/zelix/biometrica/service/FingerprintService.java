@@ -1,6 +1,6 @@
 package com.zelix.biometrica.service;
 
-import com.zelix.biometrica.domain.Fingerprint;
+import com.zelix.biometrica.service.dto.FingerprintDTO;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,33 +11,33 @@ public interface FingerprintService {
     /**
      * Save a fingerprint.
      *
-     * @param fingerprint the entity to save.
+     * @param fingerprintDTO the entity to save.
      * @return the persisted entity.
      */
-    Fingerprint save(Fingerprint fingerprint);
+    FingerprintDTO save(FingerprintDTO fingerprintDTO);
 
     /**
      * Updates a fingerprint.
      *
-     * @param fingerprint the entity to update.
+     * @param fingerprintDTO the entity to update.
      * @return the persisted entity.
      */
-    Fingerprint update(Fingerprint fingerprint);
+    FingerprintDTO update(FingerprintDTO fingerprintDTO);
 
     /**
      * Partially updates a fingerprint.
      *
-     * @param fingerprint the entity to update partially.
+     * @param fingerprintDTO the entity to update partially.
      * @return the persisted entity.
      */
-    Optional<Fingerprint> partialUpdate(Fingerprint fingerprint);
+    Optional<FingerprintDTO> partialUpdate(FingerprintDTO fingerprintDTO);
 
     /**
      * Get all the fingerprints.
      *
      * @return the list of entities.
      */
-    List<Fingerprint> findAll();
+    List<FingerprintDTO> findAll();
 
     /**
      * Get the "id" fingerprint.
@@ -45,7 +45,7 @@ public interface FingerprintService {
      * @param id the id of the entity.
      * @return the entity.
      */
-    Optional<Fingerprint> findOne(Long id);
+    Optional<FingerprintDTO> findOne(Long id);
 
     /**
      * Delete the "id" fingerprint.
