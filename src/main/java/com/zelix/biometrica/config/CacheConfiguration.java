@@ -48,6 +48,8 @@ public class CacheConfiguration {
             createCache(cm, com.zelix.biometrica.domain.User.class.getName());
             createCache(cm, com.zelix.biometrica.domain.Authority.class.getName());
             createCache(cm, com.zelix.biometrica.domain.User.class.getName() + ".authorities");
+            createCache(cm, com.zelix.biometrica.domain.Fingerprint.class.getName());
+            createCache(cm, com.zelix.biometrica.domain.FingerprintTemplate.class.getName());
             // jhipster-needle-ehcache-add-entry
         };
     }
