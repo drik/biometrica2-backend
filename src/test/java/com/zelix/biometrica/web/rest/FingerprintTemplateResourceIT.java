@@ -8,6 +8,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.zelix.biometrica.IntegrationTest;
 import com.zelix.biometrica.domain.FingerprintTemplate;
 import com.zelix.biometrica.repository.FingerprintTemplateRepository;
+import com.zelix.biometrica.service.dto.FingerprintTemplateDTO;
+import com.zelix.biometrica.service.mapper.FingerprintTemplateMapper;
 import jakarta.persistence.EntityManager;
 import java.util.Base64;
 import java.util.List;
@@ -57,6 +59,9 @@ class FingerprintTemplateResourceIT {
 
     @Autowired
     private FingerprintTemplateRepository fingerprintTemplateRepository;
+
+    @Autowired
+    private FingerprintTemplateMapper fingerprintTemplateMapper;
 
     @Autowired
     private EntityManager em;
@@ -112,9 +117,12 @@ class FingerprintTemplateResourceIT {
     void createFingerprintTemplate() throws Exception {
         int databaseSizeBeforeCreate = fingerprintTemplateRepository.findAll().size();
         // Create the FingerprintTemplate
+        FingerprintTemplateDTO fingerprintTemplateDTO = fingerprintTemplateMapper.toDto(fingerprintTemplate);
         restFingerprintTemplateMockMvc
             .perform(
-                post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(fingerprintTemplate))
+                post(ENTITY_API_URL)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(fingerprintTemplateDTO))
             )
             .andExpect(status().isCreated());
 
@@ -136,13 +144,16 @@ class FingerprintTemplateResourceIT {
     void createFingerprintTemplateWithExistingId() throws Exception {
         // Create the FingerprintTemplate with an existing ID
         fingerprintTemplate.setId(1L);
+        FingerprintTemplateDTO fingerprintTemplateDTO = fingerprintTemplateMapper.toDto(fingerprintTemplate);
 
         int databaseSizeBeforeCreate = fingerprintTemplateRepository.findAll().size();
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restFingerprintTemplateMockMvc
             .perform(
-                post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(fingerprintTemplate))
+                post(ENTITY_API_URL)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(fingerprintTemplateDTO))
             )
             .andExpect(status().isBadRequest());
 
@@ -220,12 +231,13 @@ class FingerprintTemplateResourceIT {
             .originalImageContentType(UPDATED_ORIGINAL_IMAGE_CONTENT_TYPE)
             .originalImageMime(UPDATED_ORIGINAL_IMAGE_MIME)
             .originalImageExtension(UPDATED_ORIGINAL_IMAGE_EXTENSION);
+        FingerprintTemplateDTO fingerprintTemplateDTO = fingerprintTemplateMapper.toDto(updatedFingerprintTemplate);
 
         restFingerprintTemplateMockMvc
             .perform(
-                put(ENTITY_API_URL_ID, updatedFingerprintTemplate.getId())
+                put(ENTITY_API_URL_ID, fingerprintTemplateDTO.getId())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(TestUtil.convertObjectToJsonBytes(updatedFingerprintTemplate))
+                    .content(TestUtil.convertObjectToJsonBytes(fingerprintTemplateDTO))
             )
             .andExpect(status().isOk());
 
@@ -248,12 +260,15 @@ class FingerprintTemplateResourceIT {
         int databaseSizeBeforeUpdate = fingerprintTemplateRepository.findAll().size();
         fingerprintTemplate.setId(longCount.incrementAndGet());
 
+        // Create the FingerprintTemplate
+        FingerprintTemplateDTO fingerprintTemplateDTO = fingerprintTemplateMapper.toDto(fingerprintTemplate);
+
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
         restFingerprintTemplateMockMvc
             .perform(
-                put(ENTITY_API_URL_ID, fingerprintTemplate.getId())
+                put(ENTITY_API_URL_ID, fingerprintTemplateDTO.getId())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(TestUtil.convertObjectToJsonBytes(fingerprintTemplate))
+                    .content(TestUtil.convertObjectToJsonBytes(fingerprintTemplateDTO))
             )
             .andExpect(status().isBadRequest());
 
@@ -268,12 +283,15 @@ class FingerprintTemplateResourceIT {
         int databaseSizeBeforeUpdate = fingerprintTemplateRepository.findAll().size();
         fingerprintTemplate.setId(longCount.incrementAndGet());
 
+        // Create the FingerprintTemplate
+        FingerprintTemplateDTO fingerprintTemplateDTO = fingerprintTemplateMapper.toDto(fingerprintTemplate);
+
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restFingerprintTemplateMockMvc
             .perform(
                 put(ENTITY_API_URL_ID, longCount.incrementAndGet())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(TestUtil.convertObjectToJsonBytes(fingerprintTemplate))
+                    .content(TestUtil.convertObjectToJsonBytes(fingerprintTemplateDTO))
             )
             .andExpect(status().isBadRequest());
 
@@ -288,10 +306,15 @@ class FingerprintTemplateResourceIT {
         int databaseSizeBeforeUpdate = fingerprintTemplateRepository.findAll().size();
         fingerprintTemplate.setId(longCount.incrementAndGet());
 
+        // Create the FingerprintTemplate
+        FingerprintTemplateDTO fingerprintTemplateDTO = fingerprintTemplateMapper.toDto(fingerprintTemplate);
+
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restFingerprintTemplateMockMvc
             .perform(
-                put(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(fingerprintTemplate))
+                put(ENTITY_API_URL)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(fingerprintTemplateDTO))
             )
             .andExpect(status().isMethodNotAllowed());
 
@@ -386,12 +409,15 @@ class FingerprintTemplateResourceIT {
         int databaseSizeBeforeUpdate = fingerprintTemplateRepository.findAll().size();
         fingerprintTemplate.setId(longCount.incrementAndGet());
 
+        // Create the FingerprintTemplate
+        FingerprintTemplateDTO fingerprintTemplateDTO = fingerprintTemplateMapper.toDto(fingerprintTemplate);
+
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
         restFingerprintTemplateMockMvc
             .perform(
-                patch(ENTITY_API_URL_ID, fingerprintTemplate.getId())
+                patch(ENTITY_API_URL_ID, fingerprintTemplateDTO.getId())
                     .contentType("application/merge-patch+json")
-                    .content(TestUtil.convertObjectToJsonBytes(fingerprintTemplate))
+                    .content(TestUtil.convertObjectToJsonBytes(fingerprintTemplateDTO))
             )
             .andExpect(status().isBadRequest());
 
@@ -406,12 +432,15 @@ class FingerprintTemplateResourceIT {
         int databaseSizeBeforeUpdate = fingerprintTemplateRepository.findAll().size();
         fingerprintTemplate.setId(longCount.incrementAndGet());
 
+        // Create the FingerprintTemplate
+        FingerprintTemplateDTO fingerprintTemplateDTO = fingerprintTemplateMapper.toDto(fingerprintTemplate);
+
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restFingerprintTemplateMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, longCount.incrementAndGet())
                     .contentType("application/merge-patch+json")
-                    .content(TestUtil.convertObjectToJsonBytes(fingerprintTemplate))
+                    .content(TestUtil.convertObjectToJsonBytes(fingerprintTemplateDTO))
             )
             .andExpect(status().isBadRequest());
 
@@ -426,12 +455,15 @@ class FingerprintTemplateResourceIT {
         int databaseSizeBeforeUpdate = fingerprintTemplateRepository.findAll().size();
         fingerprintTemplate.setId(longCount.incrementAndGet());
 
+        // Create the FingerprintTemplate
+        FingerprintTemplateDTO fingerprintTemplateDTO = fingerprintTemplateMapper.toDto(fingerprintTemplate);
+
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restFingerprintTemplateMockMvc
             .perform(
                 patch(ENTITY_API_URL)
                     .contentType("application/merge-patch+json")
-                    .content(TestUtil.convertObjectToJsonBytes(fingerprintTemplate))
+                    .content(TestUtil.convertObjectToJsonBytes(fingerprintTemplateDTO))
             )
             .andExpect(status().isMethodNotAllowed());
 

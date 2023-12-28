@@ -10,6 +10,8 @@ import com.zelix.biometrica.domain.Fingerprint;
 import com.zelix.biometrica.domain.enumeration.FingerName;
 import com.zelix.biometrica.domain.enumeration.HandName;
 import com.zelix.biometrica.repository.FingerprintRepository;
+import com.zelix.biometrica.service.dto.FingerprintDTO;
+import com.zelix.biometrica.service.mapper.FingerprintMapper;
 import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.Random;
@@ -51,6 +53,9 @@ class FingerprintResourceIT {
     private FingerprintRepository fingerprintRepository;
 
     @Autowired
+    private FingerprintMapper fingerprintMapper;
+
+    @Autowired
     private EntityManager em;
 
     @Autowired
@@ -90,8 +95,11 @@ class FingerprintResourceIT {
     void createFingerprint() throws Exception {
         int databaseSizeBeforeCreate = fingerprintRepository.findAll().size();
         // Create the Fingerprint
+        FingerprintDTO fingerprintDTO = fingerprintMapper.toDto(fingerprint);
         restFingerprintMockMvc
-            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(fingerprint)))
+            .perform(
+                post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(fingerprintDTO))
+            )
             .andExpect(status().isCreated());
 
         // Validate the Fingerprint in the database
@@ -108,12 +116,15 @@ class FingerprintResourceIT {
     void createFingerprintWithExistingId() throws Exception {
         // Create the Fingerprint with an existing ID
         fingerprint.setId(1L);
+        FingerprintDTO fingerprintDTO = fingerprintMapper.toDto(fingerprint);
 
         int databaseSizeBeforeCreate = fingerprintRepository.findAll().size();
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restFingerprintMockMvc
-            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(fingerprint)))
+            .perform(
+                post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(fingerprintDTO))
+            )
             .andExpect(status().isBadRequest());
 
         // Validate the Fingerprint in the database
@@ -129,9 +140,12 @@ class FingerprintResourceIT {
         fingerprint.setUuid(null);
 
         // Create the Fingerprint, which fails.
+        FingerprintDTO fingerprintDTO = fingerprintMapper.toDto(fingerprint);
 
         restFingerprintMockMvc
-            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(fingerprint)))
+            .perform(
+                post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(fingerprintDTO))
+            )
             .andExpect(status().isBadRequest());
 
         List<Fingerprint> fingerprintList = fingerprintRepository.findAll();
@@ -146,9 +160,12 @@ class FingerprintResourceIT {
         fingerprint.setFingerName(null);
 
         // Create the Fingerprint, which fails.
+        FingerprintDTO fingerprintDTO = fingerprintMapper.toDto(fingerprint);
 
         restFingerprintMockMvc
-            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(fingerprint)))
+            .perform(
+                post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(fingerprintDTO))
+            )
             .andExpect(status().isBadRequest());
 
         List<Fingerprint> fingerprintList = fingerprintRepository.findAll();
@@ -163,9 +180,12 @@ class FingerprintResourceIT {
         fingerprint.setHandName(null);
 
         // Create the Fingerprint, which fails.
+        FingerprintDTO fingerprintDTO = fingerprintMapper.toDto(fingerprint);
 
         restFingerprintMockMvc
-            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(fingerprint)))
+            .perform(
+                post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(fingerprintDTO))
+            )
             .andExpect(status().isBadRequest());
 
         List<Fingerprint> fingerprintList = fingerprintRepository.findAll();
@@ -226,12 +246,13 @@ class FingerprintResourceIT {
         // Disconnect from session so that the updates on updatedFingerprint are not directly saved in db
         em.detach(updatedFingerprint);
         updatedFingerprint.uuid(UPDATED_UUID).fingerName(UPDATED_FINGER_NAME).handName(UPDATED_HAND_NAME);
+        FingerprintDTO fingerprintDTO = fingerprintMapper.toDto(updatedFingerprint);
 
         restFingerprintMockMvc
             .perform(
-                put(ENTITY_API_URL_ID, updatedFingerprint.getId())
+                put(ENTITY_API_URL_ID, fingerprintDTO.getId())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(TestUtil.convertObjectToJsonBytes(updatedFingerprint))
+                    .content(TestUtil.convertObjectToJsonBytes(fingerprintDTO))
             )
             .andExpect(status().isOk());
 
@@ -250,12 +271,15 @@ class FingerprintResourceIT {
         int databaseSizeBeforeUpdate = fingerprintRepository.findAll().size();
         fingerprint.setId(longCount.incrementAndGet());
 
+        // Create the Fingerprint
+        FingerprintDTO fingerprintDTO = fingerprintMapper.toDto(fingerprint);
+
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
         restFingerprintMockMvc
             .perform(
-                put(ENTITY_API_URL_ID, fingerprint.getId())
+                put(ENTITY_API_URL_ID, fingerprintDTO.getId())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(TestUtil.convertObjectToJsonBytes(fingerprint))
+                    .content(TestUtil.convertObjectToJsonBytes(fingerprintDTO))
             )
             .andExpect(status().isBadRequest());
 
@@ -270,12 +294,15 @@ class FingerprintResourceIT {
         int databaseSizeBeforeUpdate = fingerprintRepository.findAll().size();
         fingerprint.setId(longCount.incrementAndGet());
 
+        // Create the Fingerprint
+        FingerprintDTO fingerprintDTO = fingerprintMapper.toDto(fingerprint);
+
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restFingerprintMockMvc
             .perform(
                 put(ENTITY_API_URL_ID, longCount.incrementAndGet())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(TestUtil.convertObjectToJsonBytes(fingerprint))
+                    .content(TestUtil.convertObjectToJsonBytes(fingerprintDTO))
             )
             .andExpect(status().isBadRequest());
 
@@ -290,9 +317,12 @@ class FingerprintResourceIT {
         int databaseSizeBeforeUpdate = fingerprintRepository.findAll().size();
         fingerprint.setId(longCount.incrementAndGet());
 
+        // Create the Fingerprint
+        FingerprintDTO fingerprintDTO = fingerprintMapper.toDto(fingerprint);
+
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restFingerprintMockMvc
-            .perform(put(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(fingerprint)))
+            .perform(put(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(fingerprintDTO)))
             .andExpect(status().isMethodNotAllowed());
 
         // Validate the Fingerprint in the database
@@ -368,12 +398,15 @@ class FingerprintResourceIT {
         int databaseSizeBeforeUpdate = fingerprintRepository.findAll().size();
         fingerprint.setId(longCount.incrementAndGet());
 
+        // Create the Fingerprint
+        FingerprintDTO fingerprintDTO = fingerprintMapper.toDto(fingerprint);
+
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
         restFingerprintMockMvc
             .perform(
-                patch(ENTITY_API_URL_ID, fingerprint.getId())
+                patch(ENTITY_API_URL_ID, fingerprintDTO.getId())
                     .contentType("application/merge-patch+json")
-                    .content(TestUtil.convertObjectToJsonBytes(fingerprint))
+                    .content(TestUtil.convertObjectToJsonBytes(fingerprintDTO))
             )
             .andExpect(status().isBadRequest());
 
@@ -388,12 +421,15 @@ class FingerprintResourceIT {
         int databaseSizeBeforeUpdate = fingerprintRepository.findAll().size();
         fingerprint.setId(longCount.incrementAndGet());
 
+        // Create the Fingerprint
+        FingerprintDTO fingerprintDTO = fingerprintMapper.toDto(fingerprint);
+
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restFingerprintMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, longCount.incrementAndGet())
                     .contentType("application/merge-patch+json")
-                    .content(TestUtil.convertObjectToJsonBytes(fingerprint))
+                    .content(TestUtil.convertObjectToJsonBytes(fingerprintDTO))
             )
             .andExpect(status().isBadRequest());
 
@@ -408,10 +444,13 @@ class FingerprintResourceIT {
         int databaseSizeBeforeUpdate = fingerprintRepository.findAll().size();
         fingerprint.setId(longCount.incrementAndGet());
 
+        // Create the Fingerprint
+        FingerprintDTO fingerprintDTO = fingerprintMapper.toDto(fingerprint);
+
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restFingerprintMockMvc
             .perform(
-                patch(ENTITY_API_URL).contentType("application/merge-patch+json").content(TestUtil.convertObjectToJsonBytes(fingerprint))
+                patch(ENTITY_API_URL).contentType("application/merge-patch+json").content(TestUtil.convertObjectToJsonBytes(fingerprintDTO))
             )
             .andExpect(status().isMethodNotAllowed());
 

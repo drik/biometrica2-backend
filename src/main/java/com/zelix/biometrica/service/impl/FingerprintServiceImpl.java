@@ -3,8 +3,12 @@ package com.zelix.biometrica.service.impl;
 import com.zelix.biometrica.domain.Fingerprint;
 import com.zelix.biometrica.repository.FingerprintRepository;
 import com.zelix.biometrica.service.FingerprintService;
+import com.zelix.biometrica.service.dto.FingerprintDTO;
+import com.zelix.biometrica.service.mapper.FingerprintMapper;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -21,56 +25,56 @@ public class FingerprintServiceImpl implements FingerprintService {
 
     private final FingerprintRepository fingerprintRepository;
 
-    public FingerprintServiceImpl(FingerprintRepository fingerprintRepository) {
+    private final FingerprintMapper fingerprintMapper;
+
+    public FingerprintServiceImpl(FingerprintRepository fingerprintRepository, FingerprintMapper fingerprintMapper) {
         this.fingerprintRepository = fingerprintRepository;
+        this.fingerprintMapper = fingerprintMapper;
     }
 
     @Override
-    public Fingerprint save(Fingerprint fingerprint) {
-        log.debug("Request to save Fingerprint : {}", fingerprint);
-        return fingerprintRepository.save(fingerprint);
+    public FingerprintDTO save(FingerprintDTO fingerprintDTO) {
+        log.debug("Request to save Fingerprint : {}", fingerprintDTO);
+        Fingerprint fingerprint = fingerprintMapper.toEntity(fingerprintDTO);
+        fingerprint = fingerprintRepository.save(fingerprint);
+        return fingerprintMapper.toDto(fingerprint);
     }
 
     @Override
-    public Fingerprint update(Fingerprint fingerprint) {
-        log.debug("Request to update Fingerprint : {}", fingerprint);
-        return fingerprintRepository.save(fingerprint);
+    public FingerprintDTO update(FingerprintDTO fingerprintDTO) {
+        log.debug("Request to update Fingerprint : {}", fingerprintDTO);
+        Fingerprint fingerprint = fingerprintMapper.toEntity(fingerprintDTO);
+        fingerprint = fingerprintRepository.save(fingerprint);
+        return fingerprintMapper.toDto(fingerprint);
     }
 
     @Override
-    public Optional<Fingerprint> partialUpdate(Fingerprint fingerprint) {
-        log.debug("Request to partially update Fingerprint : {}", fingerprint);
+    public Optional<FingerprintDTO> partialUpdate(FingerprintDTO fingerprintDTO) {
+        log.debug("Request to partially update Fingerprint : {}", fingerprintDTO);
 
         return fingerprintRepository
-            .findById(fingerprint.getId())
+            .findById(fingerprintDTO.getId())
             .map(existingFingerprint -> {
-                if (fingerprint.getUuid() != null) {
-                    existingFingerprint.setUuid(fingerprint.getUuid());
-                }
-                if (fingerprint.getFingerName() != null) {
-                    existingFingerprint.setFingerName(fingerprint.getFingerName());
-                }
-                if (fingerprint.getHandName() != null) {
-                    existingFingerprint.setHandName(fingerprint.getHandName());
-                }
+                fingerprintMapper.partialUpdate(existingFingerprint, fingerprintDTO);
 
                 return existingFingerprint;
             })
-            .map(fingerprintRepository::save);
+            .map(fingerprintRepository::save)
+            .map(fingerprintMapper::toDto);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Fingerprint> findAll() {
+    public List<FingerprintDTO> findAll() {
         log.debug("Request to get all Fingerprints");
-        return fingerprintRepository.findAll();
+        return fingerprintRepository.findAll().stream().map(fingerprintMapper::toDto).collect(Collectors.toCollection(LinkedList::new));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<Fingerprint> findOne(Long id) {
+    public Optional<FingerprintDTO> findOne(Long id) {
         log.debug("Request to get Fingerprint : {}", id);
-        return fingerprintRepository.findById(id);
+        return fingerprintRepository.findById(id).map(fingerprintMapper::toDto);
     }
 
     @Override

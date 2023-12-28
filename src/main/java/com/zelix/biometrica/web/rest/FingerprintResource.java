@@ -1,8 +1,8 @@
 package com.zelix.biometrica.web.rest;
 
-import com.zelix.biometrica.domain.Fingerprint;
 import com.zelix.biometrica.repository.FingerprintRepository;
 import com.zelix.biometrica.service.FingerprintService;
+import com.zelix.biometrica.service.dto.FingerprintDTO;
 import com.zelix.biometrica.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -45,17 +45,17 @@ public class FingerprintResource {
     /**
      * {@code POST  /fingerprints} : Create a new fingerprint.
      *
-     * @param fingerprint the fingerprint to create.
-     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new fingerprint, or with status {@code 400 (Bad Request)} if the fingerprint has already an ID.
+     * @param fingerprintDTO the fingerprintDTO to create.
+     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new fingerprintDTO, or with status {@code 400 (Bad Request)} if the fingerprint has already an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("")
-    public ResponseEntity<Fingerprint> createFingerprint(@Valid @RequestBody Fingerprint fingerprint) throws URISyntaxException {
-        log.debug("REST request to save Fingerprint : {}", fingerprint);
-        if (fingerprint.getId() != null) {
+    public ResponseEntity<FingerprintDTO> createFingerprint(@Valid @RequestBody FingerprintDTO fingerprintDTO) throws URISyntaxException {
+        log.debug("REST request to save Fingerprint : {}", fingerprintDTO);
+        if (fingerprintDTO.getId() != null) {
             throw new BadRequestAlertException("A new fingerprint cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        Fingerprint result = fingerprintService.save(fingerprint);
+        FingerprintDTO result = fingerprintService.save(fingerprintDTO);
         return ResponseEntity
             .created(new URI("/api/fingerprints/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
@@ -65,23 +65,23 @@ public class FingerprintResource {
     /**
      * {@code PUT  /fingerprints/:id} : Updates an existing fingerprint.
      *
-     * @param id the id of the fingerprint to save.
-     * @param fingerprint the fingerprint to update.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated fingerprint,
-     * or with status {@code 400 (Bad Request)} if the fingerprint is not valid,
-     * or with status {@code 500 (Internal Server Error)} if the fingerprint couldn't be updated.
+     * @param id the id of the fingerprintDTO to save.
+     * @param fingerprintDTO the fingerprintDTO to update.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated fingerprintDTO,
+     * or with status {@code 400 (Bad Request)} if the fingerprintDTO is not valid,
+     * or with status {@code 500 (Internal Server Error)} if the fingerprintDTO couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/{id}")
-    public ResponseEntity<Fingerprint> updateFingerprint(
+    public ResponseEntity<FingerprintDTO> updateFingerprint(
         @PathVariable(value = "id", required = false) final Long id,
-        @Valid @RequestBody Fingerprint fingerprint
+        @Valid @RequestBody FingerprintDTO fingerprintDTO
     ) throws URISyntaxException {
-        log.debug("REST request to update Fingerprint : {}, {}", id, fingerprint);
-        if (fingerprint.getId() == null) {
+        log.debug("REST request to update Fingerprint : {}, {}", id, fingerprintDTO);
+        if (fingerprintDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
-        if (!Objects.equals(id, fingerprint.getId())) {
+        if (!Objects.equals(id, fingerprintDTO.getId())) {
             throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
         }
 
@@ -89,34 +89,34 @@ public class FingerprintResource {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        Fingerprint result = fingerprintService.update(fingerprint);
+        FingerprintDTO result = fingerprintService.update(fingerprintDTO);
         return ResponseEntity
             .ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, fingerprint.getId().toString()))
+            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, fingerprintDTO.getId().toString()))
             .body(result);
     }
 
     /**
      * {@code PATCH  /fingerprints/:id} : Partial updates given fields of an existing fingerprint, field will ignore if it is null
      *
-     * @param id the id of the fingerprint to save.
-     * @param fingerprint the fingerprint to update.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated fingerprint,
-     * or with status {@code 400 (Bad Request)} if the fingerprint is not valid,
-     * or with status {@code 404 (Not Found)} if the fingerprint is not found,
-     * or with status {@code 500 (Internal Server Error)} if the fingerprint couldn't be updated.
+     * @param id the id of the fingerprintDTO to save.
+     * @param fingerprintDTO the fingerprintDTO to update.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated fingerprintDTO,
+     * or with status {@code 400 (Bad Request)} if the fingerprintDTO is not valid,
+     * or with status {@code 404 (Not Found)} if the fingerprintDTO is not found,
+     * or with status {@code 500 (Internal Server Error)} if the fingerprintDTO couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
-    public ResponseEntity<Fingerprint> partialUpdateFingerprint(
+    public ResponseEntity<FingerprintDTO> partialUpdateFingerprint(
         @PathVariable(value = "id", required = false) final Long id,
-        @NotNull @RequestBody Fingerprint fingerprint
+        @NotNull @RequestBody FingerprintDTO fingerprintDTO
     ) throws URISyntaxException {
-        log.debug("REST request to partial update Fingerprint partially : {}, {}", id, fingerprint);
-        if (fingerprint.getId() == null) {
+        log.debug("REST request to partial update Fingerprint partially : {}, {}", id, fingerprintDTO);
+        if (fingerprintDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
-        if (!Objects.equals(id, fingerprint.getId())) {
+        if (!Objects.equals(id, fingerprintDTO.getId())) {
             throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
         }
 
@@ -124,11 +124,11 @@ public class FingerprintResource {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        Optional<Fingerprint> result = fingerprintService.partialUpdate(fingerprint);
+        Optional<FingerprintDTO> result = fingerprintService.partialUpdate(fingerprintDTO);
 
         return ResponseUtil.wrapOrNotFound(
             result,
-            HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, fingerprint.getId().toString())
+            HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, fingerprintDTO.getId().toString())
         );
     }
 
@@ -138,7 +138,7 @@ public class FingerprintResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of fingerprints in body.
      */
     @GetMapping("")
-    public List<Fingerprint> getAllFingerprints() {
+    public List<FingerprintDTO> getAllFingerprints() {
         log.debug("REST request to get all Fingerprints");
         return fingerprintService.findAll();
     }
@@ -146,20 +146,20 @@ public class FingerprintResource {
     /**
      * {@code GET  /fingerprints/:id} : get the "id" fingerprint.
      *
-     * @param id the id of the fingerprint to retrieve.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the fingerprint, or with status {@code 404 (Not Found)}.
+     * @param id the id of the fingerprintDTO to retrieve.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the fingerprintDTO, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Fingerprint> getFingerprint(@PathVariable("id") Long id) {
+    public ResponseEntity<FingerprintDTO> getFingerprint(@PathVariable("id") Long id) {
         log.debug("REST request to get Fingerprint : {}", id);
-        Optional<Fingerprint> fingerprint = fingerprintService.findOne(id);
-        return ResponseUtil.wrapOrNotFound(fingerprint);
+        Optional<FingerprintDTO> fingerprintDTO = fingerprintService.findOne(id);
+        return ResponseUtil.wrapOrNotFound(fingerprintDTO);
     }
 
     /**
      * {@code DELETE  /fingerprints/:id} : delete the "id" fingerprint.
      *
-     * @param id the id of the fingerprint to delete.
+     * @param id the id of the fingerprintDTO to delete.
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
     @DeleteMapping("/{id}")

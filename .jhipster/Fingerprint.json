@@ -3,6 +3,7 @@
     "changelogDate": "20231228211128"
   },
   "applications": "*",
+  "dto": "mapstruct",
   "entityTableName": "fingerprint",
   "fields": [
     {
